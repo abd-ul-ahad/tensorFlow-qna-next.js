@@ -57,8 +57,8 @@ const Step1 = ({
       <div className="flex justify-center items-center flex-col">
         <input
           type="email"
-          className="px-5 py-3 border-2 outline-[rgb(16,163,127)] w-96"
-          style={{ caretColor: "rgb(16,163,127)" }}
+          className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
+          style={{ caretColor: "var(--button-bg)" }}
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -73,7 +73,7 @@ const Step1 = ({
 
         <button
           onClick={() => verify()}
-          className="mt-4 w-96 py-3 bg-[rgb(16,163,127)] text-white font-semibold tracking-wide"
+          className="mt-4 w-96 py-3 bg-[var(--button-bg)] text-white font-semibold tracking-wide"
         >
           Continue
         </button>
@@ -81,7 +81,7 @@ const Step1 = ({
 
       <p className="text-sm">
         Don't have an account?{" "}
-        <button className="text-[rgb(16,163,127)]">Sign up</button>
+        <button className="text-[var(--button-bg)]">Sign up</button>
       </p>
     </div>
   );
@@ -106,12 +106,12 @@ const Step2 = ({
           <p className="text-sm">We have sent OTP to your email</p>
           <input
             type="text"
-            className="px-5 py-3 border-2 outline-[rgb(16,163,127)] w-96"
-            style={{ caretColor: "rgb(16,163,127)" }}
+            className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
+            style={{ caretColor: "var(--button-bg)" }}
             placeholder="OTP"
           />
           <button
-            className="w-full py-3 bg-[rgb(16,163,127)] text-white font-semibold tracking-wide"
+            className="w-full py-3 bg-[var(--button-bg)] text-white font-semibold tracking-wide"
             onClick={() => setStep(2)}
           >
             Continue
@@ -155,8 +155,8 @@ const Step3 = ({
           <p>Fill your information</p>
           <input
             type="text"
-            className="px-5 py-3 border-2 outline-[rgb(16,163,127)] w-96"
-            style={{ caretColor: "rgb(16,163,127)" }}
+            className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
+            style={{ caretColor: "var(--button-bg)" }}
             placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -170,18 +170,18 @@ const Step3 = ({
           </p>
           <input
             type="password"
-            className="px-5 py-3 border-2 outline-[rgb(16,163,127)] w-96"
-            style={{ caretColor: "rgb(16,163,127)" }}
+            className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
+            style={{ caretColor: "var(--button-bg)" }}
             placeholder="Password"
           />
           <input
             type="password"
-            className="px-5 py-3 border-2 outline-[rgb(16,163,127)] w-96"
-            style={{ caretColor: "rgb(16,163,127)" }}
+            className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
+            style={{ caretColor: "var(--button-bg)" }}
             placeholder="Confirm Password"
           />
           <button
-            className="w-full py-3 bg-[rgb(16,163,127)] text-white font-semibold tracking-wide"
+            className="w-full py-3 bg-[var(--button-bg)] text-white font-semibold tracking-wide"
             onClick={() => verify()}
           >
             Submit

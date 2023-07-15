@@ -2,17 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url(./loading.css);
+
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --bg-primary: rgb(52, 53, 65);
+    --bg-sec: rgb(66, 67, 83);
+    --text-color: white;
+    --button-bg: rgb(16,163,127);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --bg-primary: rgb(52, 53, 65);
+    --bg-sec: rgb(66, 67, 83);
+    --text-color: white;
+    --button-bg: rgb(16,163,127);
   }
 }
 

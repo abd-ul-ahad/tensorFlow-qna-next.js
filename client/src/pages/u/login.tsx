@@ -31,7 +31,7 @@ export default function Login() {
         <div className="flex justify-center items-center flex-col">
           <input
             type="email"
-            className="px-5 py-3 border-2 outline-[rgb(16,163,127)] w-96"
+            className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
             style={{ caretColor: "rgb(16,163,127)" }}
             placeholder="Email"
             value={email}
@@ -53,7 +53,7 @@ export default function Login() {
           </p>
           <button
             onClick={(e) => verify()}
-            className="mt-4 w-96 py-3 bg-[rgb(16,163,127)] text-white font-semibold tracking-wide"
+            className="mt-4 w-96 py-3 bg-[var(--button-bg)] text-white font-semibold tracking-wide"
           >
             Continue
           </button>
@@ -61,7 +61,7 @@ export default function Login() {
 
         <p className="text-sm">
           Don't have an account?{" "}
-          <button className="text-[rgb(16,163,127)]">Sign up</button>
+          <button className="text-[var(--button-bg)]">Sign up</button>
         </p>
       </div>
     </div>
