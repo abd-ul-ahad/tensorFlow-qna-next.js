@@ -127,17 +127,23 @@ export default function Home() {
   };
 
   const LoadPassages = async () => {
-    const _resp = await fetch("https://qna-cyan.vercel.app/api/user/passages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      redirect: "follow",
-      referrerPolicy: "no-referrer",
-      body: JSON?.stringify({ token: localStorage?.getItem("__token_") }),
-    });
-    const _data = await _resp.json();
-    setPassageResp(_data);
+    try{
+      const _resp = await fetch("https://qna-cyan.vercel.app/api/user/passages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        redirect: "follow",
+        referrerPolicy: "no-referrer",
+        body: JSON?.stringify({ token: localStorage?.getItem("__token_") }),
+      });
+      const _data = await _resp.json();
+      setPassageResp(_data);
+    } catch {
+      localStorage?.removeItem("__token_")
+      router.push("/auth/login")
+    }
+    
   };
 
   const handleLogout = () => {

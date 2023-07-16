@@ -137,7 +137,7 @@ export default function Login() {
           </div>
 
           <p className="text-sm">
-            Don't have an account?{" "}
+            Don&lsquo;t have an account?{" "}
             <Link href="/u/register">
               <button className="text-[var(--button-bg)]">Sign up</button>
             </Link>
