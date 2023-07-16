@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Inter, Questrial } from "next/font/google";
+import { Inter } from "next/font/google";
 import * as qna from "@tensorflow-models/qna";
 import "@tensorflow/tfjs-backend-cpu";
 import "@tensorflow/tfjs-backend-webgl";
@@ -60,6 +60,16 @@ export default function Home() {
     const newAnswers = [...answers];
     const data = await Predict(currentQuestion);
 
+    let maxScore = -Infinity;
+    let maxObj = null;
+
+    data?.forEach((obj) => {
+      if (obj.score > maxScore) {
+        maxScore = obj.score;
+        maxObj = obj;
+      }
+    });
+
     const response = await fetch(
       "https://qna-cyan.vercel.app/api/user/passages",
       {
@@ -78,7 +88,7 @@ export default function Home() {
       setPassageResp(_data);
     }
 
-    newAnswers[index] = data![0];
+    newAnswers[index] = maxObj;
     setAnswers(newAnswers);
     setLoading(false);
   };
