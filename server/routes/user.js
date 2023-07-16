@@ -4,12 +4,34 @@ const { User } = require("../model/user.js");
 const router = express.Router();
 
 router
+  .post("/clear", async (req, res) => {
+    try {
+      const { token } = req.body;
+      const instance = await User.findOne({ token });
+
+      instance.passages = [];
+
+      await instance.save();
+
+      res.json({
+        done: true,
+        name: instance.name,
+        passages: instance.passages,
+      });
+    } catch (e) {
+      res.json({ done: false, e });
+    }
+  })
   .post("/passages", async (req, res) => {
     try {
       const { token } = req.body;
       const instance = await User.findOne({ token });
 
-      res.json({ done: true, name: instance.name, passages: instance.passages });
+      res.json({
+        done: true,
+        name: instance.name,
+        passages: instance.passages,
+      });
     } catch (e) {
       res.json({ done: false, e });
     }
@@ -23,7 +45,11 @@ router
 
       await instance.save();
 
-      res.json({ done: true, passages: instance.passages });
+      res.json({
+        done: true,
+        name: instance.name,
+        passages: instance.passages,
+      });
     } catch (e) {
       res.json({ done: false, e });
     }

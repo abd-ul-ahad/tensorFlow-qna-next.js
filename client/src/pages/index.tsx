@@ -37,12 +37,11 @@ export default function Home() {
   const [model, setModel] = useState<qna.QuestionAndAnswer>();
   const [loading, setLoading] = useState<boolean>(true);
   const [question, setQuestion] = useState<string[]>([""]);
-  const [passage, setPassage] = useState<string>();
+  const [passage, setPassage] = useState<string>("");
   const [answers, setAnswers] = useState<(Answer | null)[]>([]);
   const [nQuestions, setNQuestions] = useState<number[]>([0]);
   const [count, setCount] = useState<number>(1);
   const [passageResp, setPassageResp] = useState<PassageResp>();
-  const [currentPassageI, setCurrentPassageI] = useState<number>(-1);
 
   const handleQuestionChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -54,12 +53,49 @@ export default function Home() {
   };
 
   const handleAnswerSubmit = async (index: number) => {
+    setLoading(true);
     const currentQuestion = question![index];
     const newAnswers = [...answers];
     const data = await Predict(currentQuestion);
 
+    const response = await fetch("http://localhost:8080/api/user/passages", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow",
+      referrerPolicy: "no-referrer",
+      body: JSON?.stringify({ passage: passage, token: user.token }),
+    });
+    const _data = await response.json();
+
+    if (_data?.done) {
+      setPassageResp(_data);
+    }
+
     newAnswers[index] = data![0];
     setAnswers(newAnswers);
+    setLoading(false);
+  };
+
+  const handleClear = async () => {
+    setLoading(true);
+    const response = await fetch("http://localhost:8080/api/user/clear", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow",
+      referrerPolicy: "no-referrer",
+      body: JSON?.stringify({ token: user.token }),
+    });
+    const _data = await response.json();
+
+    if (_data?.done) {
+      setPassageResp(_data);
+    }
+
+    setLoading(false);
   };
 
   const Load = async () => {
@@ -124,7 +160,8 @@ export default function Home() {
           name={passageResp?.name!}
           handleLogout={handleLogout}
           passages={passageResp?.passages!}
-          setCurrentPassageI={setCurrentPassageI}
+          setPassage={setPassage}
+          handleClear={handleClear}
         />
         <MobMenu />
         <div className="w-full py-8 px-5 md:px-10 lg:px-0">
@@ -135,6 +172,7 @@ export default function Home() {
               style={{
                 boxShadow: "rgba(0, 0, 0, 0.56) 0px 22px 70px 4px",
               }}
+              value={passage}
               className="py-4 px-5 rounded-lg bg-[var(--bg-sec)] w-full lg:w-1/2 outline-none caret-white text-[var(--text-color)]"
               onChange={(e) => setPassage(e.target.value)}
             ></textarea>
@@ -194,18 +232,20 @@ const SideBar = ({
   name,
   passages,
   handleLogout,
-  setCurrentPassageI,
+  setPassage,
+  handleClear,
 }: {
+  handleClear: () => Promise<void>;
   name: string;
   passages: string[];
   handleLogout: () => void;
-  setCurrentPassageI: React.Dispatch<React.SetStateAction<number>>;
+  setPassage: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   return (
     <div className="bg-[#202123] hidden text-[var(--text-color)] lg:flex flex-col justify-between text-sm px-4 py-7 h-full fixed left-0 top-0">
-      <div className="h-full space-y-1">
+      <div className="h-full w-full space-y-1">
         <button
-          onClick={() => setCurrentPassageI(-1)}
+          onClick={() => setPassage("")}
           className="py-3 px-5 rounded-lg bg-transparent hover:bg-[var(--bg-primary)] w-full flex justify-center items-start"
         >
           <MdAdd color="rgb(176, 178, 194)" />
@@ -213,7 +253,7 @@ const SideBar = ({
         {passages?.map((item, i) => {
           return (
             <button
-              onClick={() => setCurrentPassageI(i)}
+              onClick={() => setPassage(item)}
               key={i}
               className="py-2 px-6 rounded-lg hover:bg-[var(--bg-primary)] flex justify-start items-center space-x-3"
             >
@@ -222,6 +262,13 @@ const SideBar = ({
             </button>
           );
         })}
+        <button
+          onClick={() => handleClear()}
+          className="py-2 w-full px-6 rounded-lg hover:bg-[var(--bg-primary)] flex justify-between items-center space-x-3"
+        >
+          <p>Clear</p>
+          <FiMessageSquare color="var(--text-color)" />
+        </button>
       </div>
       <hr />
       <div className="pt-5">
