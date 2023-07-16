@@ -1,22 +1,77 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import Loading from "@/components/Loading";
+import Link from "next/link";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function Login() {
+  const router = useRouter();
   const [step, setStep] = useState<number>(0);
   const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    try {
+      if (localStorage?.getItem("__token_") !== null) {
+        router.push("http://localhost:3000/");
+        return;
+      }
+      setLoading(false);
+    } catch {}
+  }, []);
+
+  const handleRegister = async () => {
+    setLoading(true);
+    const response = await fetch("http://localhost:8080/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow",
+      referrerPolicy: "no-referrer",
+      body: JSON.stringify({ email: email, password: password, name: name }),
+    });
+    const data = await response.json();
+    if (data?.done) {
+      toast.success("You have been redirected to the Login page!", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      setEmail("");
+      setName("");
+      setPassword("");
+      router.push("http://localhost:3000/u/login");
+    } else {
+      toast.error("The provided email or password is invalid.", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="bg-white flex justify-center items-center h-screen">
-      {step === 0 ? (
-        <Step1 setStep={setStep} setEmail={setEmail} email={email} />
-      ) : step === 1 ? (
-        <Step2 setStep={setStep} />
-      ) : step === 2 ? (
-        <Step3 name={name} setName={setName} />
-      ) : null}
-    </div>
+    <>
+      {loading === true && <Loading />}
+      <ToastContainer />
+      <div className="bg-white flex justify-center items-center h-screen">
+        {step === 0 ? (
+          <Step1 setStep={setStep} setEmail={setEmail} email={email} />
+        ) : step === 1 ? (
+          <Step2
+            name={name}
+            setName={setName}
+            password={password}
+            setPassword={setPassword}
+            handleRegister={handleRegister}
+          />
+        ) : null}
+      </div>
+    </>
   );
 }
 
@@ -52,7 +107,7 @@ const Step1 = ({
         />
       </div>
       <h3 className="text-black text-3xl font-bold tracking-wider">
-        Welcome Back
+        Register here
       </h3>
       <div className="flex justify-center items-center flex-col">
         <input
@@ -80,64 +135,49 @@ const Step1 = ({
       </div>
 
       <p className="text-sm">
-        Don't have an account?{" "}
-        <button className="text-[var(--button-bg)]">Sign up</button>
+        Already have an account?{" "}
+        <Link href="/u/login">
+          <button className="text-[var(--button-bg)]">Log in</button>
+        </Link>
       </p>
     </div>
   );
 };
-const Step2 = ({
-  setStep,
-}: {
-  setStep: React.Dispatch<React.SetStateAction<number>>;
-}) => {
-  return (
-    <div className="flex justify-center items-center space-y-5 flex-col">
-      <div className="flex justify-center items-center">
-        <Image
-          src="/logo.png"
-          width={60}
-          height={60}
-          alt="Picture of the author"
-        />
-      </div>
-      <div className="flex flex-col justify-center items-center">
-        <div className="space-y-4 flex flex-col justify-center items-center">
-          <p className="text-sm">We have sent OTP to your email</p>
-          <input
-            type="text"
-            className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
-            style={{ caretColor: "var(--button-bg)" }}
-            placeholder="OTP"
-          />
-          <button
-            className="w-full py-3 bg-[var(--button-bg)] text-white font-semibold tracking-wide"
-            onClick={() => setStep(2)}
-          >
-            Continue
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
 
-const Step3 = ({
+const Step2 = ({
   setName,
   name,
+  password,
+  setPassword,
+  handleRegister,
 }: {
   name: string;
+  password: string;
+  setPassword: React.Dispatch<React.SetStateAction<string>>;
   setName: React.Dispatch<React.SetStateAction<string>>;
+  handleRegister: () => Promise<void>;
 }) => {
   const [verifyName, setVerifyName] = useState<boolean>();
+  const [verifyPass, setVerifyPass] = useState<boolean>();
+  const [cPass, setCPass] = useState<string>();
 
-  const verify = () => {
-    const reg = /^[A-Za-z]{4,}$/;
-    if (reg.test(name)) {
+  const handleVerifyName = () => {
+    const regex = /^[a-zA-Z ]{4,}$/;
+    if (regex.test(name)) {
       setVerifyName(false);
-    } else {
-      setVerifyName(true);
+      return true;
     }
+    setVerifyName(true);
+    return false;
+  };
+
+  const handleVerifyPass = () => {
+    if (password === cPass) {
+      setVerifyPass(false);
+      return true;
+    }
+    setVerifyPass(true);
+    return false;
   };
 
   return (
@@ -173,16 +213,32 @@ const Step3 = ({
             className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
             style={{ caretColor: "var(--button-bg)" }}
             placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <input
             type="password"
             className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
             style={{ caretColor: "var(--button-bg)" }}
             placeholder="Confirm Password"
+            value={cPass}
+            onChange={(e) => setCPass(e.target.value)}
           />
+          <p
+            className={`text-xs w-full text-end text-red-600 mt-2 ${
+              verifyPass === true ? "" : "hidden"
+            }`}
+          >
+            Password is different
+          </p>
           <button
             className="w-full py-3 bg-[var(--button-bg)] text-white font-semibold tracking-wide"
-            onClick={() => verify()}
+            onClick={() => {
+              if (handleVerifyName() && handleVerifyPass()) {
+                handleRegister();
+                setPassword("");
+              }
+            }}
           >
             Submit
           </button>

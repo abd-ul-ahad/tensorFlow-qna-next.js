@@ -41,9 +41,15 @@ router
         instance.token = token;
         await instance.save();
 
-        res.json({ done: true, token });
+        res.json({
+          done: true,
+          passages: instance.passages,
+          name: instance.name,
+          email,
+          token,
+        });
       } else {
-        res.json({ done: true, error: "incorrect validations" });
+        res.json({ done: false, error: "incorrect validations" });
       }
     } catch (error) {
       res.json({ done: false, error: error.message });

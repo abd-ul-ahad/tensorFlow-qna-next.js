@@ -1,69 +1,148 @@
 "use client";
+import { User } from "@/store/slices/UserSlice";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import type { RootState } from "@/store";
+import { useSelector, useDispatch } from "react-redux";
+import { login } from "@/store/slices/UserSlice";
+import Loading from "@/components/Loading";
+import Link from "next/link";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Login() {
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user);
+
+  const [loading, setLoading] = useState<boolean>(true);
   const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [errorInEmail, setErrorInEmail] = useState<boolean>();
 
   const verify = () => {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (reg.test(email)) {
       setErrorInEmail(false);
-    } else {
-      setErrorInEmail(true);
+      return true;
+    }
+    setErrorInEmail(true);
+    return false;
+  };
+
+  const handleLogin = async () => {
+    if (verify()) {
+      setLoading(true);
+      const response = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        redirect: "follow",
+        referrerPolicy: "no-referrer",
+        body: JSON?.stringify({ email: email, password: password }),
+      });
+      const data = await response.json();
+      console.log(data);
+
+      if (data?.done === true) {
+        toast.success("You have been redirected to the homepage!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+
+        setEmail("");
+        setPassword("");
+        const i: User = {
+          name: data?.name,
+          email: data?.email,
+          token: data?.token,
+          passages: data?.passages,
+        };
+        localStorage?.setItem("__token_", data?.token);
+
+        dispatch(login(i));
+
+        router.push("http://localhost:3000/");
+      } else {
+        toast.error("The provided email or password is invalid.", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        console.log(data);
+
+        setLoading(false);
+      }
     }
   };
-  return (
-    <div className="bg-white flex justify-center items-center h-screen">
-      <div className="flex justify-center items-center space-y-5 flex-col">
-        <div className="flex justify-center items-center">
-          <Image
-            src="/logo.png"
-            width={60}
-            height={60}
-            alt="Picture of the author"
-          />
-        </div>
-        <h3 className="text-black text-3xl font-bold tracking-wider">
-          Welcome Back
-        </h3>
-        <div className="flex justify-center items-center flex-col">
-          <input
-            type="email"
-            className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
-            style={{ caretColor: "rgb(16,163,127)" }}
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <p
-            className={`text-xs w-full text-end text-red-600 mt-2 ${
-              errorInEmail === true ? "" : "hidden"
-            }`}
-          >
-            Please enter a valid email
-          </p>
-          <p
-            className={`text-xs w-full text-end text-green-600 mt-2  ${
-              errorInEmail === false ? "" : "hidden"
-            }`}
-          >
-            valid email
-          </p>
-          <button
-            onClick={(e) => verify()}
-            className="mt-4 w-96 py-3 bg-[var(--button-bg)] text-white font-semibold tracking-wide"
-          >
-            Continue
-          </button>
-        </div>
 
-        <p className="text-sm">
-          Don't have an account?{" "}
-          <button className="text-[var(--button-bg)]">Sign up</button>
-        </p>
+  useEffect(() => {
+    try {
+      if (localStorage?.getItem("__token_") !== null) {
+        router.push("http://localhost:3000/");
+        return;
+      }
+      setLoading(false);
+    } catch {}
+  }, []);
+
+  return (
+    <>
+      {loading === true && <Loading />}
+      <ToastContainer />
+      <div className="bg-white flex justify-center items-center h-screen">
+        <div className="flex justify-center items-center space-y-5 flex-col">
+          <div className="flex justify-center items-center">
+            <Image
+              src="/logo.png"
+              width={60}
+              height={60}
+              alt="Picture of the author"
+            />
+          </div>
+          <h3 className="text-black text-3xl font-bold tracking-wider">
+            Welcome Back
+          </h3>
+          <div className="flex justify-center items-center flex-col">
+            <input
+              type="email"
+              className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
+              style={{ caretColor: "rgb(16,163,127)" }}
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <p
+              className={`text-xs w-full text-end text-red-600 mt-2 ${
+                errorInEmail === true ? "" : "hidden"
+              }`}
+            >
+              Please enter a valid email
+            </p>
+            <input
+              type="password"
+              className="mt-2 px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
+              style={{ caretColor: "rgb(16,163,127)" }}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <button
+              onClick={() => handleLogin()}
+              className="mt-4 w-96 py-3 bg-[var(--button-bg)] text-white font-semibold tracking-wide"
+            >
+              Continue
+            </button>
+          </div>
+
+          <p className="text-sm">
+            Don't have an account?{" "}
+            <Link href="/u/register">
+              <button className="text-[var(--button-bg)]">Sign up</button>
+            </Link>
+          </p>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
