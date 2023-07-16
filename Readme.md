@@ -2,6 +2,9 @@
 
 This repository provides an example implementation of a question-and-answer (Q&A) system using the `@tensorflow-models/qna` package in conjunction with Next.js. The model is trained on a given paragraph and can answer questions related to the information contained within the paragraph.
 
+## Visit
+[Click here](https://qna-hazel.vercel.app) to visit. 
+
 ## Prerequisites
 
 Before running this application, ensure that you have the following installed:
