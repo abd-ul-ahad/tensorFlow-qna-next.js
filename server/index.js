@@ -1,19 +1,30 @@
-import * as qna from "@tensorflow-models/qna";
-import "@tensorflow/tfjs-backend-cpu";
-import "@tensorflow/tfjs-backend-webgl";
-import express from "express";
-
-// Globals
-let model;
+const express = require("express");
+const mongoose = require("mongoose");
+const UserRouter = require("./routes/user.js");
+const AuthRouter = require("./routes/auth.js");
+const { config } = require("dotenv");
+config();
 
 const app = express();
 
 app.use(express.json());
+app.use("/api/user/", UserRouter.router);
+app.use("/api/auth/", AuthRouter.router);
 
 app.get("/", async (req, res) => {
   res.json({ done: true });
 });
 
-app.listen(8080, async () => {
-  console.log("model loaded");
-});
+// MONGOOSE SETUP
+const PORT = process.env.PORT | 8080;
+
+// Connecting MONGOOSE
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(async () => {
+    app.listen(PORT, () => console.log(`Server is started ${PORT}`));
+  })
+  .catch((e) => console.log(e));
