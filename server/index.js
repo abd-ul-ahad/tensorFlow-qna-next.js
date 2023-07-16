@@ -31,3 +31,5 @@ mongoose
     app.listen(PORT, () => console.log(`Server is started ${PORT}`));
   })
   .catch((e) => console.log(e));
+
+export default app;
