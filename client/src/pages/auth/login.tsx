@@ -36,7 +36,14 @@ export default function Login() {
             />
           </div>
           <p>Welcome</p>
-          <p>Log in with your account to continue</p>
+          <p>
+            Log in with your account to continue or become our{" "}
+            <Link href="/guest">
+              <button className={`text-[var(--button-bg)] text-sm`}>
+                Guest
+              </button>
+            </Link>
+          </p>
           <div className="flex space-x-3">
             <Link href="/u/login">
               <button

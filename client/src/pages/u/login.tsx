@@ -135,13 +135,22 @@ export default function Login() {
               Continue
             </button>
           </div>
-
-          <p className="text-sm">
-            Don&lsquo;t have an account?{" "}
-            <Link href="/u/register">
-              <button className="text-[var(--button-bg)]">Sign up</button>
-            </Link>
-          </p>
+          <div className="w-full flex-col space-y-1 flex justify-center items-center">
+            <p className="text-sm">
+              Don&lsquo;t have an account?{" "}
+              <Link href="/u/register">
+                <button className="text-[var(--button-bg)]">Sign up</button>
+              </Link>
+            </p>
+            <p className="text-sm">
+              Our continue as{" "}
+              <Link href="/guest">
+                <button className={`text-[var(--button-bg)] text-sm`}>
+                  Guest
+                </button>
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </>

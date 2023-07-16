@@ -144,13 +144,20 @@ const Step1 = ({
           Continue
         </button>
       </div>
-
-      <p className="text-sm">
-        Already have an account?{" "}
-        <Link href="/u/login">
-          <button className="text-[var(--button-bg)]">Log in</button>
-        </Link>
-      </p>
+      <div className="w-full flex-col space-y-1 flex justify-center items-center">
+        <p className="text-sm">
+          Already have an account?{" "}
+          <Link href="/u/login">
+            <button className="text-[var(--button-bg)]">Log in</button>
+          </Link>
+        </p>
+        <p className="text-sm">
+          Our continue as{" "}
+          <Link href="/guest">
+            <button className={`text-[var(--button-bg)] text-sm`}>Guest</button>
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };
