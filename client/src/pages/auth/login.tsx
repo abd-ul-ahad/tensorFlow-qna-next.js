@@ -36,7 +36,7 @@ export default function Login() {
             />
           </div>
           <p>Welcome</p>
-          <p>
+          <p className="px-5 text-center">
             Log in with your account to continue or become our{" "}
             <Link href="/guest">
               <button className={`text-[var(--button-bg)] text-sm`}>
