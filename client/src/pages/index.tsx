@@ -169,7 +169,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="bg-[var(--bg-primary)] h-screen">
+    <div className="bg-[var(--bg-primary)] min-h-screen">
       {loading === true && <Loading />}
 
       <main

@@ -81,7 +81,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="bg-[var(--bg-primary)] h-screen">
+    <div className="bg-[var(--bg-primary)] min-h-screen">
       {loading === true && <Loading />}
 
       <main
@@ -91,9 +91,9 @@ export default function Home() {
           <div className="w-full space-y-3 flex justify-center items-center flex-col">
             <div className="w-full mb-5 flex justify-end items-center">
               <Link href="/auth/login">
-              <button className="py-3 md:mr-10 px-5 text-white flex flex-col justify-center items-center space-y-1 mt-10 text-sm rounded-lg bg-[var(--bg-sec)] outline-[var(--button-bg)]">
-                <p>Login</p>
-              </button>
+                <button className="py-3 md:mr-10 px-5 text-white flex flex-col justify-center items-center space-y-1 mt-10 text-sm rounded-lg bg-[var(--bg-sec)] outline-[var(--button-bg)]">
+                  <p>Login</p>
+                </button>
               </Link>
             </div>
             <textarea
