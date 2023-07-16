@@ -12,7 +12,7 @@ export default function login() {
   useEffect(() => {
     try {
       if (localStorage?.getItem("__token_") !== null) {
-        router.push("http://localhost:3000/");
+        router.push("/");
         return;
       }
       setLoading(false);

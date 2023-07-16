@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Inter } from "next/font/google";
+import { Inter, Questrial } from "next/font/google";
 import * as qna from "@tensorflow-models/qna";
 import "@tensorflow/tfjs-backend-cpu";
 import "@tensorflow/tfjs-backend-webgl";
@@ -13,7 +13,6 @@ import { useRouter } from "next/router";
 import type { RootState } from "@/store";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@/store/slices/UserSlice";
-import { ToastContainer, toast } from "react-toastify";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -53,20 +52,26 @@ export default function Home() {
   };
 
   const handleAnswerSubmit = async (index: number) => {
+    if (question[0] === "" || passage === "") {
+      return;
+    }
     setLoading(true);
     const currentQuestion = question![index];
     const newAnswers = [...answers];
     const data = await Predict(currentQuestion);
 
-    const response = await fetch("http://localhost:8080/api/user/passages", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      redirect: "follow",
-      referrerPolicy: "no-referrer",
-      body: JSON?.stringify({ passage: passage, token: user.token }),
-    });
+    const response = await fetch(
+      "https://qna-cyan.vercel.app/api/user/passages",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        redirect: "follow",
+        referrerPolicy: "no-referrer",
+        body: JSON?.stringify({ passage: passage, token: user.token }),
+      }
+    );
     const _data = await response.json();
 
     if (_data?.done) {
@@ -80,7 +85,7 @@ export default function Home() {
 
   const handleClear = async () => {
     setLoading(true);
-    const response = await fetch("http://localhost:8080/api/user/clear", {
+    const response = await fetch("https://qna-cyan.vercel.app/api/user/clear", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -112,7 +117,7 @@ export default function Home() {
   };
 
   const LoadPassages = async () => {
-    const _resp = await fetch("http://localhost:8080/api/user/passages", {
+    const _resp = await fetch("https://qna-cyan.vercel.app/api/user/passages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -123,7 +128,6 @@ export default function Home() {
     });
     const _data = await _resp.json();
     setPassageResp(_data);
-    console.log({ resp: _data });
   };
 
   const handleLogout = () => {
@@ -131,9 +135,6 @@ export default function Home() {
       setLoading(true);
       dispatch(logout());
       localStorage?.removeItem("__token_");
-      toast.success("Logged out!", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
       router.reload();
     } catch {}
   };
@@ -152,7 +153,7 @@ export default function Home() {
   return (
     <div className="bg-[var(--bg-primary)] h-screen">
       {loading === true && <Loading />}
-      <ToastContainer />
+
       <main
         className={`${inter.className} flex lg:flex-row flex-col justify-center items-start`}
       >
@@ -163,7 +164,13 @@ export default function Home() {
           setPassage={setPassage}
           handleClear={handleClear}
         />
-        <MobMenu />
+        <MobMenu
+          name={passageResp?.name!}
+          handleLogout={handleLogout}
+          passages={passageResp?.passages!}
+          setPassage={setPassage}
+          handleClear={handleClear}
+        />
         <div className="w-full py-8 px-5 md:px-10 lg:px-0">
           <div className="w-full space-y-3 flex justify-center items-center flex-col">
             <textarea
@@ -286,7 +293,19 @@ const SideBar = ({
   );
 };
 
-const MobMenu = () => {
+const MobMenu = ({
+  name,
+  passages,
+  handleLogout,
+  setPassage,
+  handleClear,
+}: {
+  handleClear: () => Promise<void>;
+  name: string;
+  passages: string[];
+  handleLogout: () => void;
+  setPassage: React.Dispatch<React.SetStateAction<string>>;
+}) => {
   const [open, setOpen] = useState<boolean>(false);
 
   try {
@@ -297,16 +316,19 @@ const MobMenu = () => {
     <>
       <div className="flex justify-between items-center px-3 py-2 lg:hidden">
         <div className="flex justify-center items-center">
-          <div className="flex justify-start items-center pl-5">
+          <div className="flex justify-start items-center pl-2 mt-2">
             <button
               onClick={() => setOpen(!open)}
-              className="py-3 px-5 rounded-lg bg-transparent hover:bg-[#202123] w-full flex justify-center items-start"
+              style={{
+                boxShadow: "rgba(0, 0, 0, 0.56) 0px 22px 70px 4px",
+              }}
+              className="py-3 px-6 rounded-lg bg-transparent hover:bg-[#202123] w-full flex justify-center items-start"
             >
               <GiHamburgerMenu color="rgb(176, 178, 194)" />
             </button>
           </div>
           <div
-            className={`absolute top-0  ${
+            className={`absolute top-0 ${
               open ? "left-0" : "-left-[100%]"
             } duration-500 w-full h-full bg-[#202123] py-4 flex flex-col justify-between overflow-hidden`}
           >
@@ -318,15 +340,57 @@ const MobMenu = () => {
               </div>
 
               <div className="text-[var(--text-color)] lg:flex flex-col justify-between text-sm px-4 py-7 h-full">
-                <div className="h-full space-y-1">
-                  <button className="py-3 px-5 rounded-lg bg-transparent hover:bg-[var(--bg-primary)] w-full flex justify-center items-start">
+                <div className="h-full w-full space-y-1">
+                  <button
+                    onClick={() => {
+                      setOpen(!open);
+                      setPassage("");
+                    }}
+                    className="py-3 px-5 rounded-lg bg-transparent hover:bg-[var(--bg-primary)] w-full flex justify-center items-start"
+                  >
                     <MdAdd color="rgb(176, 178, 194)" />
                   </button>
-                  <button className="w-full py-2 px-6 rounded-lg hover:bg-[var(--bg-primary)] flex justify-start items-center space-x-3">
+                  {passages?.map((item, i) => {
+                    return (
+                      <button
+                        onClick={() => {
+                          setOpen(!open);
+                          setPassage(item);
+                        }}
+                        key={i}
+                        className="py-2 px-6 rounded-lg hover:bg-[var(--bg-primary)] flex justify-start items-center space-x-3"
+                      >
+                        <FiMessageSquare color="var(--text-color)" />
+                        <p>{item.substring(0, 25)}...</p>
+                      </button>
+                    );
+                  })}
+                  <button
+                    onClick={() => {
+                      setOpen(!open);
+                      handleClear();
+                    }}
+                    className="py-2 w-full px-6 rounded-lg hover:bg-[var(--bg-primary)] flex justify-between items-center space-x-3"
+                  >
+                    <p>Clear</p>
                     <FiMessageSquare color="var(--text-color)" />
-                    <p>Google LLC is an Ameri...</p>
                   </button>
                 </div>
+              </div>
+              <div className="pt-5 absolute bottom-0 w-full px-2 py-4">
+                <hr />
+                <button className="px-6 text-white rounded-lg pt-3 hover:bg-[var(--bg-primary)] cursor-default flex justify-between items-center space-x-3 w-full">
+                  <p className="py-2">{name}</p>
+                  <span
+                    className="py-2 text-xs hover:bg-[var(--bg-primary)] cursor-pointer px-2"
+                    onClick={() => {
+                      setOpen(!open);
+                      handleLogout();
+                    }}
+                  >
+                    Logout
+                  </span>
+                </button>
               </div>
             </div>
           </div>

@@ -34,17 +34,19 @@ export default function Login() {
   const handleLogin = async () => {
     if (verify()) {
       setLoading(true);
-      const response = await fetch("http://localhost:8080/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
-        body: JSON?.stringify({ email: email, password: password }),
-      });
+      const response = await fetch(
+        "https://qna-cyan.vercel.app/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          redirect: "follow",
+          referrerPolicy: "no-referrer",
+          body: JSON?.stringify({ email: email, password: password }),
+        }
+      );
       const data = await response.json();
-      console.log(data);
 
       if (data?.done === true) {
         toast.success("You have been redirected to the homepage!", {
@@ -63,12 +65,11 @@ export default function Login() {
 
         dispatch(login(i));
 
-        router.push("http://localhost:3000/");
+        router.push("/");
       } else {
         toast.error("The provided email or password is invalid.", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        console.log(data);
 
         setLoading(false);
       }
@@ -78,7 +79,7 @@ export default function Login() {
   useEffect(() => {
     try {
       if (localStorage?.getItem("__token_") !== null) {
-        router.push("http://localhost:3000/");
+        router.push("/");
         return;
       }
       setLoading(false);
@@ -105,7 +106,7 @@ export default function Login() {
           <div className="flex justify-center items-center flex-col">
             <input
               type="email"
-              className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
+              className="px-5 py-3 border-2 outline-[var(--button-bg)] md:md:w-96 w-72"
               style={{ caretColor: "rgb(16,163,127)" }}
               placeholder="Email"
               value={email}
@@ -120,7 +121,7 @@ export default function Login() {
             </p>
             <input
               type="password"
-              className="mt-2 px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
+              className="mt-2 px-5 py-3 border-2 outline-[var(--button-bg)] md:w-96 w-72"
               style={{ caretColor: "rgb(16,163,127)" }}
               placeholder="Password"
               value={password}
@@ -129,7 +130,7 @@ export default function Login() {
 
             <button
               onClick={() => handleLogin()}
-              className="mt-4 w-96 py-3 bg-[var(--button-bg)] text-white font-semibold tracking-wide"
+              className="mt-4 md:w-96 w-72 py-3 bg-[var(--button-bg)] text-white font-semibold tracking-wide"
             >
               Continue
             </button>

@@ -17,7 +17,7 @@ export default function Login() {
   useEffect(() => {
     try {
       if (localStorage?.getItem("__token_") !== null) {
-        router.push("http://localhost:3000/");
+        router.push("/");
         return;
       }
       setLoading(false);
@@ -26,31 +26,42 @@ export default function Login() {
 
   const handleRegister = async () => {
     setLoading(true);
-    const response = await fetch("http://localhost:8080/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      redirect: "follow",
-      referrerPolicy: "no-referrer",
-      body: JSON.stringify({ email: email, password: password, name: name }),
-    });
-    const data = await response.json();
-    if (data?.done) {
-      toast.success("You have been redirected to the Login page!", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+    try {
+      const response = await fetch(
+        "https://qna-cyan.vercel.app/api/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          redirect: "follow",
+          referrerPolicy: "no-referrer",
+          body: JSON.stringify({
+            email: email,
+            password: password,
+            name: name,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data?.done) {
+        toast.success("You have been redirected to the Login page!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
 
-      setEmail("");
-      setName("");
-      setPassword("");
-      router.push("http://localhost:3000/u/login");
-    } else {
-      toast.error("The provided email or password is invalid.", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+        setEmail("");
+        setName("");
+        setPassword("");
+        router.push("/u/login");
+      } else {
+        toast.error("The provided email or password is invalid.", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
 
-      setLoading(false);
+        setLoading(false);
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -112,7 +123,7 @@ const Step1 = ({
       <div className="flex justify-center items-center flex-col">
         <input
           type="email"
-          className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
+          className="px-5 py-3 border-2 outline-[var(--button-bg)] md:w-96 w-72"
           style={{ caretColor: "var(--button-bg)" }}
           placeholder="Email"
           value={email}
@@ -128,7 +139,7 @@ const Step1 = ({
 
         <button
           onClick={() => verify()}
-          className="mt-4 w-96 py-3 bg-[var(--button-bg)] text-white font-semibold tracking-wide"
+          className="mt-4 md:w-96 w-72 py-3 bg-[var(--button-bg)] text-white font-semibold tracking-wide"
         >
           Continue
         </button>
@@ -195,7 +206,7 @@ const Step2 = ({
           <p>Fill your information</p>
           <input
             type="text"
-            className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
+            className="px-5 py-3 border-2 outline-[var(--button-bg)] md:w-96 w-72"
             style={{ caretColor: "var(--button-bg)" }}
             placeholder="Name"
             value={name}
@@ -210,7 +221,7 @@ const Step2 = ({
           </p>
           <input
             type="password"
-            className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
+            className="px-5 py-3 border-2 outline-[var(--button-bg)] md:w-96 w-72"
             style={{ caretColor: "var(--button-bg)" }}
             placeholder="Password"
             value={password}
@@ -218,7 +229,7 @@ const Step2 = ({
           />
           <input
             type="password"
-            className="px-5 py-3 border-2 outline-[var(--button-bg)] w-96"
+            className="px-5 py-3 border-2 outline-[var(--button-bg)] md:w-96 w-72"
             style={{ caretColor: "var(--button-bg)" }}
             placeholder="Confirm Password"
             value={cPass}
