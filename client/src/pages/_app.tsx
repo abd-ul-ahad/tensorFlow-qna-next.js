@@ -25,13 +25,13 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <>
-     <LoadingBar
-          color="#10a37f"
-          progress={progress}
-          onLoaderFinished={() => setProgress(0)}
-        />
+      <LoadingBar
+        color="#10a37f"
+        progress={progress}
+        onLoaderFinished={() => setProgress(0)}
+      />
       <Head>
-        <title>MindQuery</title>
+        <title>QNA</title>
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
       </Head>
       <Provider store={store}>
