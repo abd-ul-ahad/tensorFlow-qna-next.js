@@ -35,7 +35,7 @@ router
       if (bcrypt.compareSync(password, instance.password)) {
         var token = jwt.sign(
           { name: instance.name, email },
-          "8a174f7ea61cf5b769703f735f080af718552a86a9b438f6374691f7d45d9f478b8d12b7e77b7f215ea25143ac0c3a208fff"
+          process.env.SECRET
         );
 
         instance.token = token;
