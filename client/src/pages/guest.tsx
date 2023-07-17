@@ -9,6 +9,7 @@ import { BiSolidSend } from "react-icons/bi";
 import { MdAdd } from "react-icons/md";
 import { FiSun } from "react-icons/fi";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,6 +21,8 @@ interface Answer {
 }
 
 export default function Home() {
+  const router = useRouter();
+
   const [model, setModel] = useState<qna.QuestionAndAnswer>();
   const [loading, setLoading] = useState<boolean>(true);
   const [question, setQuestion] = useState<string[]>([""]);
@@ -76,7 +79,11 @@ export default function Home() {
 
   useEffect(() => {
     try {
-      Load();
+      if (localStorage?.getItem("__token_") === null) {
+        Load();
+      } else {
+        router?.push("/");
+      }
     } catch {}
   }, []);
 

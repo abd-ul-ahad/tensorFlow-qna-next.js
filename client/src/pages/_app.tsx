@@ -11,7 +11,6 @@ import { useRouter } from "next/router";
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const [progress, setProgress] = useState(0);
-  const { pathname } = router;
 
   useEffect(() => {
     router.events.on("routeChangeStart", () => {
